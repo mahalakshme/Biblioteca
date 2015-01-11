@@ -69,8 +69,6 @@ public class BibliotecaTest {
          outContent.reset();
 
          Biblioteca sample = new Biblioteca(inContent, outContent);
-        // sample.ChooseOption(inContent);
-
 
         ArrayList<String> books = new ArrayList<String>();
         ArrayList<String> bookTest = new ArrayList<String>();

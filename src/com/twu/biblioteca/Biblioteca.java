@@ -14,17 +14,7 @@ public class Biblioteca {
     public Biblioteca() {
         System.out.print("Welcome");
 
-       // for(int clear = 0; clear < 1000; clear++)
-        {
-            System.out.print("\r") ;
-        }
-       /* try {
-            Runtime.getRuntime().exec("clear");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-*/
-        // System.out.println();
+        System.out.println();
         CreateMenu();
         DisplayMenu();
         ChooseOption(System.in);
@@ -40,7 +30,7 @@ public class Biblioteca {
     }
 
     private void CreateMenu() {
-        menu.add("1.List");
+        menu.add("1.List Books");
     }
 
     public void DisplayMenu() {
