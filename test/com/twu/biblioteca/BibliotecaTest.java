@@ -40,6 +40,7 @@ public class BibliotecaTest {
     public void CreateMenu()
     {
         menu.add("1.List Books");
+        menu.add("2.Checkout Book");
     }
 
     @After
@@ -56,16 +57,13 @@ public class BibliotecaTest {
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        Biblioteca sample = new Biblioteca(inContent, outContent);
-
+        new Biblioteca(inContent);
 
         ArrayList<String> welcomeOptionsTest = new ArrayList<String>();
         GenerateListFromOutputStream(welcomeOptionsTest);
         ArrayList<String> welcomeOptions = new ArrayList<String>();
 
-        welcomeOptions.add(0, welcomeMessage);
-        welcomeOptions.addAll(menu);
-        welcomeOptions.add(quitMessage);
+        AddBasicMessagesToList(welcomeOptions);
 
         assertThat(welcomeOptionsTest, Is.is(welcomeOptions));
     }
@@ -76,14 +74,12 @@ public class BibliotecaTest {
          inContent = new ByteArrayInputStream(option);
          outContent.reset();
 
-        new Biblioteca(inContent, outContent);
+        new Biblioteca(inContent);
 
         ArrayList<String> books = new ArrayList<String>();
         ArrayList<String> bookTest = new ArrayList<String>();
 
-         books.add(0, welcomeMessage);
-         books.addAll(menu);
-         books.add(quitMessage);
+         AddBasicMessagesToList(books);
 
 
          shouldCheckListBooksHelper(books, bookTest);
@@ -99,11 +95,17 @@ public class BibliotecaTest {
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        new Biblioteca(inContent, outContent);
+        new Biblioteca(inContent);
+        ArrayList<String> expected = new ArrayList<String>();
+        ArrayList<String> actual = new ArrayList<String>();
 
-        String expected = welcomeMessage + "\n" + menu.get(0) + "\n" + quitMessage + "\n" + invalidOption + "\n" + continueMessage + "\n";
+        AddBasicMessagesToList(expected);
+        expected.add(invalidOption);
+        expected.add(continueMessage);
 
-        assertThat(outContent.toString(), Is.is(expected));
+        GenerateListFromOutputStream(actual);
+
+        assertThat(actual, Is.is(expected));
     }
 
     @Test
@@ -113,15 +115,13 @@ public class BibliotecaTest {
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        new Biblioteca(inContent, outContent);
+        new Biblioteca(inContent);
 
         ArrayList<String> books = new ArrayList<String>();
         ArrayList<String> bookTest = new ArrayList<String>();
         ArrayList<String> expected = new ArrayList<String>();
 
-        expected.add(0, welcomeMessage);
-        expected.addAll(menu);
-        expected.add(quitMessage);
+        AddBasicMessagesToList(expected);
 
         shouldCheckListBooksHelper(books, bookTest);
 
@@ -133,6 +133,35 @@ public class BibliotecaTest {
         expected.add(continueMessage);
 
         assertThat(bookTest, Is.is(expected));
+    }
+
+    @Test
+    public void shouldBeAbleToCheckoutBook()
+    {
+        byte[] option = "2 101 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent).Checkout();
+        ArrayList<String> bookTest = new ArrayList<String>();
+        ReadFile(bookTest);
+        boolean isContains = false;
+        for (String bookDetails : bookTest) {
+            StringTokenizer book = new StringTokenizer(bookDetails, ":");
+            if(book.nextToken().equals("101"))
+            {
+                isContains = true;
+                break;
+            }
+        }
+
+        assertThat(isContains, Is.is(false));
+    }
+
+    private void AddBasicMessagesToList(ArrayList<String> expected) {
+        expected.add(welcomeMessage);
+        expected.addAll(menu);
+        expected.add(quitMessage);
     }
 
     private void shouldCheckListBooksHelper(ArrayList<String> books, ArrayList<String> bookTest) {
@@ -186,7 +215,6 @@ public class BibliotecaTest {
             String opt = option.nextToken();
             list.add(opt);
         }
-
     }
 
 

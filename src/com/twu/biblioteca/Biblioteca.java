@@ -19,7 +19,7 @@ public class Biblioteca {
         ChooseOption(System.in);
     }
 
-    public Biblioteca(InputStream inContent, ByteArrayOutputStream outContent) {
+    public Biblioteca(InputStream inContent) {
         System.out.print("Welcome");
         System.out.println();
         CreateMenu();
@@ -28,6 +28,7 @@ public class Biblioteca {
 
     private void CreateMenu() {
         menu.add("1.List Books");
+        menu.add("2.Checkout Book");
     }
 
     private void DisplayMenu() {
@@ -84,7 +85,6 @@ public class Biblioteca {
         String option;
         String shouldContinue = "Y";
         Scanner input = new Scanner(inContent);
-
 
             while(shouldContinue.charAt(0) == 'Y')
             {
