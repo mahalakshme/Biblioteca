@@ -23,7 +23,7 @@ public class BibliotecaTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-    ByteArrayInputStream inContent = new ByteArrayInputStream("My string".getBytes());
+    private ByteArrayInputStream inContent = new ByteArrayInputStream("My string".getBytes());
 
 
 
@@ -64,15 +64,12 @@ public class BibliotecaTest {
 
      @Test
     public void shouldBeAbleToChooseOption() throws IOException {
-       Biblioteca sample = new Biblioteca();
-       /*assertNotEquals(inContent.available(), 1);
-        System.out.println(inContent.available());
-       */
-
          byte[] option = "1".getBytes();
          inContent = new ByteArrayInputStream(option);
          outContent.reset();
-         sample.ChooseOption(inContent);
+
+         Biblioteca sample = new Biblioteca(inContent, outContent);
+        // sample.ChooseOption(inContent);
 
 
         ArrayList<String> books = new ArrayList<String>();

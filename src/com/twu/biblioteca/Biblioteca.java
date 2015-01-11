@@ -13,14 +13,34 @@ public class Biblioteca {
 
     public Biblioteca() {
         System.out.print("Welcome");
+
+       // for(int clear = 0; clear < 1000; clear++)
+        {
+            System.out.print("\r") ;
+        }
+       /* try {
+            Runtime.getRuntime().exec("clear");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+*/
+        // System.out.println();
+        CreateMenu();
+        DisplayMenu();
+        ChooseOption(System.in);
+    }
+
+    public Biblioteca(InputStream inContent, ByteArrayOutputStream outContent) {
+        System.out.print("Welcome");
         System.out.println();
         CreateMenu();
         DisplayMenu();
-        // ChooseOption(System.in);
+        outContent.reset();
+        ChooseOption(inContent);
     }
 
     private void CreateMenu() {
-        menu.add("1.List Books");
+        menu.add("1.List");
     }
 
     public void DisplayMenu() {
