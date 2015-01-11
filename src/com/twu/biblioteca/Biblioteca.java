@@ -1,9 +1,6 @@
 package com.twu.biblioteca;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -14,17 +11,16 @@ public class Biblioteca {
     ArrayList<String> menu = new ArrayList<String>();
 
 
-    public Biblioteca()
-    {
+    public Biblioteca() {
         System.out.print("Welcome");
         System.out.println();
         CreateMenu();
         DisplayMenu();
+        // ChooseOption(System.in);
     }
 
     private void CreateMenu() {
-        menu.add("List Books");
-        menu.add("Checkout Book");
+        menu.add("1.List Books");
     }
 
     public void DisplayMenu() {
@@ -74,5 +70,22 @@ public class Biblioteca {
 
     public void AddOptionsToMenu(String s) {
         menu.add(s);
+    }
+
+    public void ChooseOption(InputStream inContent) {
+
+        int data;
+        try {
+            data = inContent.read();
+
+            switch ((char)data)
+            {
+                case '1':DisplayBooks();
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
