@@ -5,14 +5,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 
 
@@ -25,7 +21,9 @@ public class BibliotecaTest {
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private ByteArrayInputStream inContent = new ByteArrayInputStream("My string".getBytes());
 
-
+    String welcomeMessage = "Welcome";
+    String invalidOption = "Select a valid option!";
+    String quitMessage = "Enter 0 to quit";
 
     ArrayList<String> menu = new ArrayList<String>();
 
@@ -52,77 +50,63 @@ public class BibliotecaTest {
     @Test
     public void shouldWelcomeAndListOptions()
     {
-        Biblioteca sample = new Biblioteca();
+
+        byte[] option = "0".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        Biblioteca sample = new Biblioteca(inContent, outContent);
+
 
         ArrayList<String> welcomeOptionsTest = new ArrayList<String>();
         GenerateListFromOutputStream(welcomeOptionsTest);
         ArrayList<String> welcomeOptions = new ArrayList<String>();
+
+        welcomeOptions.add(0, welcomeMessage);
         welcomeOptions.addAll(menu);
-        welcomeOptions.add(0, "Welcome");
+        welcomeOptions.add(quitMessage);
+
         assertThat(welcomeOptionsTest, Is.is(welcomeOptions));
     }
 
      @Test
     public void shouldBeAbleToChooseOption() throws IOException {
-         byte[] option = "1".getBytes();
+         byte[] option = "10".getBytes();
          inContent = new ByteArrayInputStream(option);
          outContent.reset();
 
-         Biblioteca sample = new Biblioteca(inContent, outContent);
+        new Biblioteca(inContent, outContent);
 
         ArrayList<String> books = new ArrayList<String>();
         ArrayList<String> bookTest = new ArrayList<String>();
 
-        shouldCheckListBooksHelper(books, bookTest);
-        assertThat(bookTest, Is.is(books));
+         books.add(0, welcomeMessage);
+         books.addAll(menu);
+         books.add(quitMessage);
+
+         shouldCheckListBooksHelper(books, bookTest);
+         assertThat(bookTest, Is.is(books));
 
     }
 
     @Test
-    public void shouldDisplayMenu() throws IOException {
-        Biblioteca sample= new Biblioteca();
-
-
-        ArrayList<String> menuTest = GetMenuOutputStream(sample);
-
-        assertThat(menuTest, Is.is(menu));
-    }
-
-    private ArrayList<String> GetMenuOutputStream(Biblioteca sample) {
-
-        outContent.reset();
-        sample.DisplayMenu();
-        ArrayList<String> menuTest = new ArrayList<String>();
-        GenerateListFromOutputStream(menuTest);
-        return menuTest;
-    }
-
-    private void GenerateListFromOutputStream(ArrayList<String> menuTest) {
-        StringTokenizer option = new StringTokenizer(outContent.toString(), "\n");
-
-
-        while (option.hasMoreElements()) {
-            String opt = option.nextToken();
-            menuTest.add(opt);
-        }
-
-    }
-
-    @Test
-    public void shouldCheckListBooks()
+    public void shouldCheckForInvalidOption()
     {
-        Biblioteca sample= new Biblioteca();
+        byte[] option = "90".getBytes();
+        inContent = new ByteArrayInputStream(option);
         outContent.reset();
-        sample.DisplayBooks();
 
-        ArrayList<String> books = new ArrayList<String>();
-        ArrayList<String> bookTest = new ArrayList<String>();
+        new Biblioteca(inContent, outContent);
 
-        shouldCheckListBooksHelper(books, bookTest);
+        String expected = welcomeMessage + "\n" + menu.get(0) + "\n" + quitMessage + "\n" + invalidOption;
 
-        assertThat(bookTest, Is.is(books));
+        assertThat(outContent.toString(), Is.is(expected));
+    }
 
-
+    @Test
+    public void shouldBeAbleToContinueChoosingOptionsUntilQuit()
+    {
+        
     }
 
     private void shouldCheckListBooksHelper(ArrayList<String> books, ArrayList<String> bookTest) {
@@ -136,24 +120,6 @@ public class BibliotecaTest {
             bookTest.add(book);
         }
     }
-
-    @Test
-    public void shouldBeAbleToAddOptionsToMenu() throws IOException {
-        Biblioteca sample= new Biblioteca();
-        sample.AddOptionsToMenu("2.Checkin book");
-        menu.add("2.Checkin book");
-        ArrayList<String> menuTest = GetMenuOutputStream(sample);
-
-        assertThat(menuTest, Is.is(menu));
-    }
-
-    //@Test
-    public void shouldCheckForInvalidOption()
-    {
-      //  Biblioteca sample = new Biblioteca();
-
-    }
-
 
     private void ReadFile(ArrayList bookTest)
     {
@@ -169,7 +135,7 @@ public class BibliotecaTest {
                     new BufferedReader(fileReader);
 
             while((line = bufferedReader.readLine()) != null) {
-                 bookTest.add(line);
+                bookTest.add(line);
             }
 
             bufferedReader.close();
@@ -185,4 +151,81 @@ public class BibliotecaTest {
                             + fileName + "'");
         }
     }
+
+    private void GenerateListFromOutputStream(ArrayList<String> list) {
+        StringTokenizer option = new StringTokenizer(outContent.toString(), "\n");
+
+
+        while (option.hasMoreElements()) {
+            String opt = option.nextToken();
+            list.add(opt);
+        }
+
+    }
+
+
+
+  /*  private ArrayList<String> GetMenuOutputStream(Biblioteca sample) {
+
+       // outContent.reset();
+       // sample.DisplayMenu();
+        ArrayList<String> menuTest = new ArrayList<String>();
+        GenerateListFromOutputStream(menuTest);
+        return menuTest;
+    }
+
+
+
+
+
+
+
+    //@Test
+    public void shouldDisplayMenu() throws IOException {
+        Biblioteca sample= new Biblioteca();
+
+
+        ArrayList<String> menuTest = GetMenuOutputStream(sample);
+
+        assertThat(menuTest, Is.is(menu));
+    }
+
+    // @Test
+    public void shouldBeAbleToAddOptionsToMenu() throws IOException {
+
+        byte[] option = "0".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        Biblioteca sample = new Biblioteca(inContent, outContent);
+
+        sample.AddOptionsToMenu("2.Checkin book");
+
+        ArrayList<String> menuOptions = new ArrayList<String>();
+        menuOptions.add(welcomeMessage);
+        menuOptions.addAll(menu);
+        menuOptions.add("2.Checkin book");
+        menuOptions.add(quitMessage);
+        ArrayList<String> menuTest = GetMenuOutputStream(sample);
+
+        assertThat(menuTest, Is.is(menu));
+    }
+
+    //    @Test
+    public void shouldCheckListBooks()
+    {
+        Biblioteca sample= new Biblioteca();
+        outContent.reset();
+        sample.DisplayBooks();
+
+        ArrayList<String> books = new ArrayList<String>();
+        ArrayList<String> bookTest = new ArrayList<String>();
+
+        shouldCheckListBooksHelper(books, bookTest);
+
+        assertThat(bookTest, Is.is(books));
+
+
+    }
+*/
 }

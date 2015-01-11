@@ -25,7 +25,6 @@ public class Biblioteca {
         System.out.println();
         CreateMenu();
         DisplayMenu();
-        outContent.reset();
         ChooseOption(inContent);
     }
 
@@ -85,13 +84,22 @@ public class Biblioteca {
     public void ChooseOption(InputStream inContent) {
 
         int data;
+        System.out.println("Enter 0 to quit");
         try {
             data = inContent.read();
 
-            switch ((char)data)
+            while(data != '0')
             {
-                case '1':DisplayBooks();
+             switch ((char) data)
+             {
+                 case '1':
+                     DisplayBooks();
+                     break;
+                 default:
+                     System.out.print("Select a valid option!");
 
+             }
+                data = inContent.read();
             }
         } catch (IOException e) {
             e.printStackTrace();
