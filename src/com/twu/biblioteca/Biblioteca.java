@@ -2,6 +2,7 @@ package com.twu.biblioteca;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by mahalaks on 10/01/15.
@@ -13,10 +14,8 @@ public class Biblioteca {
 
     public Biblioteca() {
         System.out.print("Welcome");
-
         System.out.println();
         CreateMenu();
-        DisplayMenu();
         ChooseOption(System.in);
     }
 
@@ -24,7 +23,6 @@ public class Biblioteca {
         System.out.print("Welcome");
         System.out.println();
         CreateMenu();
-        DisplayMenu();
         ChooseOption(inContent);
     }
 
@@ -32,14 +30,14 @@ public class Biblioteca {
         menu.add("1.List Books");
     }
 
-    public void DisplayMenu() {
+    private void DisplayMenu() {
         for (String option : menu) {
             System.out.println(option);
         }
 
     }
 
-    public void DisplayBooks() {
+    private void DisplayBooks() {
         // The name of the file to open.
         String fileName = "books";
 
@@ -83,26 +81,30 @@ public class Biblioteca {
 
     public void ChooseOption(InputStream inContent) {
 
-        int data;
-        System.out.println("Enter 0 to quit");
-        try {
-            data = inContent.read();
+        String option;
+        String shouldContinue = "Y";
+        Scanner input = new Scanner(inContent);
 
-            while(data != '0')
+
+            while(shouldContinue.charAt(0) == 'Y')
             {
-             switch ((char) data)
+                DisplayMenu();
+                System.out.println("Enter q to Quit");
+                option = input.next();
+             switch (option.charAt(0))
              {
                  case '1':
                      DisplayBooks();
                      break;
+                 case 'q':
+                     return;
                  default:
-                     System.out.print("Select a valid option!");
+                     System.out.println("Select a valid option!");
 
              }
-                data = inContent.read();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                System.out.println("Do you want to continue?<Y/N>");
+                shouldContinue = input.next();
+
         }
 
     }

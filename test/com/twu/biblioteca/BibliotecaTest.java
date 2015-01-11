@@ -23,7 +23,8 @@ public class BibliotecaTest {
 
     String welcomeMessage = "Welcome";
     String invalidOption = "Select a valid option!";
-    String quitMessage = "Enter 0 to quit";
+    String continueMessage = "Do you want to continue?<Y/N>";
+    String quitMessage = "Enter q to Quit";
 
     ArrayList<String> menu = new ArrayList<String>();
 
@@ -51,7 +52,7 @@ public class BibliotecaTest {
     public void shouldWelcomeAndListOptions()
     {
 
-        byte[] option = "0".getBytes();
+        byte[] option = "q".getBytes();
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
@@ -71,7 +72,7 @@ public class BibliotecaTest {
 
      @Test
     public void shouldBeAbleToChooseOption() throws IOException {
-         byte[] option = "10".getBytes();
+         byte[] option = "1 N".getBytes();
          inContent = new ByteArrayInputStream(option);
          outContent.reset();
 
@@ -84,7 +85,9 @@ public class BibliotecaTest {
          books.addAll(menu);
          books.add(quitMessage);
 
+
          shouldCheckListBooksHelper(books, bookTest);
+         books.add(continueMessage);
          assertThat(bookTest, Is.is(books));
 
     }
@@ -92,13 +95,13 @@ public class BibliotecaTest {
     @Test
     public void shouldCheckForInvalidOption()
     {
-        byte[] option = "90".getBytes();
+        byte[] option = "9 N".getBytes();
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
         new Biblioteca(inContent, outContent);
 
-        String expected = welcomeMessage + "\n" + menu.get(0) + "\n" + quitMessage + "\n" + invalidOption;
+        String expected = welcomeMessage + "\n" + menu.get(0) + "\n" + quitMessage + "\n" + invalidOption + "\n" + continueMessage + "\n";
 
         assertThat(outContent.toString(), Is.is(expected));
     }
@@ -106,7 +109,30 @@ public class BibliotecaTest {
     @Test
     public void shouldBeAbleToContinueChoosingOptionsUntilQuit()
     {
-        
+        byte[] option = "1 Y 1 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, outContent);
+
+        ArrayList<String> books = new ArrayList<String>();
+        ArrayList<String> bookTest = new ArrayList<String>();
+        ArrayList<String> expected = new ArrayList<String>();
+
+        expected.add(0, welcomeMessage);
+        expected.addAll(menu);
+        expected.add(quitMessage);
+
+        shouldCheckListBooksHelper(books, bookTest);
+
+        expected.addAll(books);
+        expected.add(continueMessage);
+        expected.addAll(menu);
+        expected.add(quitMessage);
+        expected.addAll(books);
+        expected.add(continueMessage);
+
+        assertThat(bookTest, Is.is(expected));
     }
 
     private void shouldCheckListBooksHelper(ArrayList<String> books, ArrayList<String> bookTest) {
