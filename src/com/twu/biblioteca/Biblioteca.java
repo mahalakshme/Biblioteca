@@ -17,7 +17,9 @@ public class Biblioteca {
     public Biblioteca()
     {
         System.out.print("Welcome");
+        System.out.println();
         CreateMenu();
+        DisplayMenu();
     }
 
     private void CreateMenu() {
@@ -68,5 +70,9 @@ public class Biblioteca {
             // ex.printStackTrace();
         }
 
+    }
+
+    public void AddOptionsToMenu(String s) {
+        menu.add(s);
     }
 }

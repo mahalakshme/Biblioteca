@@ -23,6 +23,8 @@ public class BibliotecaTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
+
+
     ArrayList<String> menu = new ArrayList<String>();
 
     @Before
@@ -34,7 +36,6 @@ public class BibliotecaTest {
     @Before
     public void CreateMenu()
     {
-
         menu.add("List Books");
         menu.add("Checkout Book");
     }
@@ -49,16 +50,35 @@ public class BibliotecaTest {
     public void shouldWelcome()
     {
         Biblioteca sample = new Biblioteca();
-        assertEquals("Welcome", outContent.toString());
+
+        ArrayList<String> welcomeOptionsTest = new ArrayList<String>();
+        GenerateListFromOutputStream(welcomeOptionsTest);
+        ArrayList<String> welcomeOptions = new ArrayList<String>();
+        welcomeOptions.addAll(menu);
+        welcomeOptions.add(0, "Welcome");
+        assertThat(welcomeOptionsTest, Is.is(welcomeOptions));
     }
 
     @Test
     public void shouldDisplayMenu() throws IOException {
+        Biblioteca sample= new Biblioteca();
 
-        Biblioteca sample = new Biblioteca();
+
+        ArrayList<String> menuTest = checkIfMenuDisplayedCorrectly(sample);
+
+        assertThat(menuTest, Is.is(menu));
+    }
+
+    private ArrayList<String> checkIfMenuDisplayedCorrectly(Biblioteca sample) {
+
         outContent.reset();
         sample.DisplayMenu();
         ArrayList<String> menuTest = new ArrayList<String>();
+        GenerateListFromOutputStream(menuTest);
+        return menuTest;
+    }
+
+    private void GenerateListFromOutputStream(ArrayList<String> menuTest) {
         StringTokenizer option = new StringTokenizer(outContent.toString(), "\n");
 
 
@@ -67,13 +87,12 @@ public class BibliotecaTest {
             menuTest.add(opt);
         }
 
-        assertThat(menuTest, Is.is(menu));
     }
 
     @Test
     public void shouldCheckListBooks()
     {
-      Biblioteca sample = new Biblioteca();
+        Biblioteca sample= new Biblioteca();
         outContent.reset();
         ArrayList<String> books = new ArrayList<String>();
         ArrayList<String> bookTest = new ArrayList<String>();
@@ -92,6 +111,17 @@ public class BibliotecaTest {
 
 
     }
+
+    @Test
+    public void shouldBeAbleToAddOptionsToMenu() throws IOException {
+        Biblioteca sample= new Biblioteca();
+        sample.AddOptionsToMenu("Checkin book");
+        menu.add("Checkin book");
+        ArrayList<String> menuTest = checkIfMenuDisplayedCorrectly(sample);
+
+        assertThat(menuTest, Is.is(menu));
+    }
+
 
     private void ReadFile(ArrayList bookTest)
     {

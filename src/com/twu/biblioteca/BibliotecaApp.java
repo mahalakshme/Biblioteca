@@ -11,9 +11,14 @@ public class BibliotecaApp {
     public static void main(String[] args) {
        Biblioteca myLibrary = new Biblioteca();
 
-        String fileName = "books";
+        myLibrary.DisplayBooks();
+
+
+
+   /*     String fileName = "books";
 
         String line;
+
 
         try {
             FileReader fileReader =
@@ -38,6 +43,7 @@ public class BibliotecaApp {
                     "Error reading file '"
                             + fileName + "'");
         }
+*/
 
     }
 }
