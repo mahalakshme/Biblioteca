@@ -142,10 +142,12 @@ public class BibliotecaTest {
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        new Biblioteca(inContent).Checkout();
+        new Biblioteca(inContent);
+
         ArrayList<String> bookTest = new ArrayList<String>();
         ReadFile(bookTest);
         boolean isContains = false;
+
         for (String bookDetails : bookTest) {
             StringTokenizer book = new StringTokenizer(bookDetails, ":");
             if(book.nextToken().equals("101"))

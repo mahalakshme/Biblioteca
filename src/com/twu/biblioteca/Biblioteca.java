@@ -1,56 +1,51 @@
 package com.twu.biblioteca;
 
+
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  * Created by mahalaks on 10/01/15.
  */
 public class Biblioteca {
 
-    ArrayList<String> menu = new ArrayList<String>();
+    // ArrayList<String> menu = new ArrayList<String>();
 
+    Menu menu;
+    String bookStore;
 
     public Biblioteca() {
+
+        bookStore = "books";
+        menu = new Menu();
         System.out.print("Welcome");
         System.out.println();
-        CreateMenu();
+
         ChooseOption(System.in);
     }
 
     public Biblioteca(InputStream inContent) {
+
+        menu = new Menu();
         System.out.print("Welcome");
         System.out.println();
-        CreateMenu();
+
         ChooseOption(inContent);
     }
 
-    private void CreateMenu() {
-        menu.add("1.List Books");
-        menu.add("2.Checkout Book");
-    }
 
-    private void DisplayMenu() {
-        for (String option : menu) {
-            System.out.println(option);
-        }
-
-    }
 
     private void DisplayBooks() {
-        // The name of the file to open.
-        String fileName = "books";
 
-        // This will reference one line at a time
-        String line = null;
+        String line;
 
         try {
-            // FileReader reads text files in the default encoding.
             FileReader fileReader =
-                    new FileReader(fileName);
+                    new FileReader(bookStore);
 
-            // Always wrap FileReader in BufferedReader.
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
 
@@ -58,29 +53,79 @@ public class Biblioteca {
               System.out.println(line);
             }
 
-            // Always close files.
             bufferedReader.close();
         }
         catch(FileNotFoundException ex) {
             System.out.println(
                     "Unable to open file '" +
-                            fileName + "'");
+                            bookStore + "'");
         }
         catch(IOException ex) {
             System.out.println(
                     "Error reading file '"
-                            + fileName + "'");
-            // Or we could just do this:
-            // ex.printStackTrace();
+                            + bookStore + "'");
+
         }
 
     }
 
-    public void AddOptionsToMenu(String s) {
-        menu.add(s);
+    private void Checkout(String accessionNo) {
+        removeBookWithaccessionNo("books", accessionNo);
     }
 
-    public void ChooseOption(InputStream inContent) {
+    private void removeBookWithaccessionNo(String file, String lineToRemove) {
+
+        try {
+
+            File inFile = new File(file);
+
+            if (!inFile.isFile()) {
+                System.out.println("Parameter is not an existing file");
+                return;
+            }
+
+            //Construct the new file that will later be renamed to the original filename.
+            File tempFile = new File(inFile.getAbsolutePath() + "a");
+
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+
+            String line = null;
+
+
+            while ((line = br.readLine()) != null) {
+
+                StringTokenizer book = new StringTokenizer(line, ":");
+                if (!book.nextToken().equals(lineToRemove)) {
+
+                    pw.println(line);
+                    pw.flush();
+                }
+
+            }
+                pw.close();
+                br.close();
+
+                //Delete the original file
+                if (!inFile.delete()) {
+                    System.out.println("Could not delete file");
+                    return;
+                }
+
+                //Rename the new file to the filename the original file had.
+                if (!tempFile.renameTo(inFile))
+                    System.out.println("Could not rename file");
+
+            }
+        catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        }
+
+    private void ChooseOption(InputStream inContent) {
 
         String option;
         String shouldContinue = "Y";
@@ -88,7 +133,7 @@ public class Biblioteca {
 
             while(shouldContinue.charAt(0) == 'Y')
             {
-                DisplayMenu();
+                menu.DisplayMenu();
                 System.out.println("Enter q to Quit");
                 option = input.next();
              switch (option.charAt(0))
@@ -96,6 +141,10 @@ public class Biblioteca {
                  case '1':
                      DisplayBooks();
                      break;
+                 case '2':
+                     System.out.println("Enter the accession no of the book to be checked out:");
+                     String accessionNo = input.next();
+                     Checkout(accessionNo);
                  case 'q':
                      return;
                  default:
@@ -108,4 +157,6 @@ public class Biblioteca {
         }
 
     }
+
+
 }
