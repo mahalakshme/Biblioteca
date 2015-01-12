@@ -16,6 +16,10 @@ public class Biblioteca {
 
     Menu menu;
     String bookStore;
+    enum Status {successful, unsuccessful, error}
+    Status status;
+    String booksAvailableFile = "books available";
+    String bookStoreFile = "books";
 
     public Biblioteca() {
 
@@ -70,24 +74,35 @@ public class Biblioteca {
     }
 
     private void Checkout(String accessionNo) {
-        removeBookWithaccessionNo("books", accessionNo);
+
+
+        removeBookWithAccessionNo(accessionNo);
+
+        if(status == Status.successful) {
+            System.out.println("Thank you! Enjoy the book");
+        }
+        else if(status != Status.error) {
+            System.out.println("That book is not available.");
+        }
     }
 
-    private void removeBookWithaccessionNo(String file, String lineToRemove) {
+    private  void removeBookWithAccessionNo(String lineToRemove) {
 
         try {
 
-            File inFile = new File(file);
+            boolean bookPresent = false;
+            File inFile = new File(booksAvailableFile);
 
             if (!inFile.isFile()) {
                 System.out.println("Parameter is not an existing file");
+                status = Status.error;
                 return;
             }
 
             //Construct the new file that will later be renamed to the original filename.
             File tempFile = new File(inFile.getAbsolutePath() + "a");
 
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new FileReader(booksAvailableFile));
             PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
 
             String line = null;
@@ -100,6 +115,10 @@ public class Biblioteca {
 
                     pw.println(line);
                     pw.flush();
+                }
+                else
+                {
+                    status = Status.successful;
                 }
 
             }
@@ -145,6 +164,12 @@ public class Biblioteca {
                      System.out.println("Enter the accession no of the book to be checked out:");
                      String accessionNo = input.next();
                      Checkout(accessionNo);
+                     break;
+                 case '3':
+                     System.out.println("Enter the accession no of the book to be returned:");
+                     String accessionNoReturn = input.next();
+                     Return(accessionNoReturn);
+                     break;
                  case 'q':
                      return;
                  default:
@@ -156,6 +181,77 @@ public class Biblioteca {
 
         }
 
+    }
+
+    private void Return(String accessionNoReturn) {
+        ReturnBookWithAccessionNo(accessionNoReturn);
+
+        if(status == Status.successful) {
+            System.out.println("Thank you! Enjoy the book");
+        }
+        else if(status != Status.error) {
+            System.out.println("That book is not available.");
+        }
+    }
+
+    private void ReturnBookWithAccessionNo(String accessionNoReturn) {
+
+        ArrayList<String> bookTest = new ArrayList<String>();
+
+        if(DoesBookStoreContainFile(accessionNoReturn))
+        {
+          AddToBooksAvailable(accessionNoReturn);
+        }
+        else
+        {
+            System.out.println("That is not a valid book to return.");
+        }
+    }
+
+    private void AddToBooksAvailable(String accessionNoReturn) {
+
+        try{
+            PrintWriter out = new PrintWriter(new FileWriter(booksAvailableFile));
+            out.println("the text");
+        }catch (IOException e) {
+            //exception handling left as an exercise for the reader
+        }
+    }
+
+    private boolean DoesBookStoreContainFile(String accessionNoReturn)
+    {
+        String line;
+        boolean isContains = false;
+        try {
+            FileReader fileReader =
+                    new FileReader(booksAvailableFile);
+
+            BufferedReader bufferedReader =
+                    new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                StringTokenizer book = new StringTokenizer(line, ":");
+                if(book.nextToken().equals(accessionNoReturn))
+                {
+                    String bookDetails = line;
+                    isContains = true;
+                    break;
+                }
+            }
+
+            bufferedReader.close();
+            return isContains;
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                    "Unable to open file '" +
+                            booksAvailableFile + "'");
+        }
+        catch(IOException ex) {
+            System.out.println(
+                    "Error reading file '"
+                            + booksAvailableFile + "'");
+        }
     }
 
 

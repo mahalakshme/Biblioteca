@@ -25,6 +25,11 @@ public class BibliotecaTest {
     String invalidOption = "Select a valid option!";
     String continueMessage = "Do you want to continue?<Y/N>";
     String quitMessage = "Enter q to Quit";
+    String successfulCheckoutMessage = "Thank you! Enjoy the book";
+    String unsuccessfulCheckoutMessage = "That book is not available.";
+
+    String booksAvailableFile = "books available";
+    String bookStoreFile = "books";
 
     ArrayList<String> menu = new ArrayList<String>();
 
@@ -160,6 +165,57 @@ public class BibliotecaTest {
         assertThat(isContains, Is.is(false));
     }
 
+    @Test
+    public void shouldDisplayMessageAfterSuccessfulCheckout()
+    {
+        byte[] option = "2 100 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent);
+        String messages[] = outContent.toString().split("\n");
+        String actualCheckoutMesssage = messages[messages.length - 1];
+        assertThat(actualCheckoutMesssage, Is.is(successfulCheckoutMessage));
+    }
+
+    @Test
+    public void shouldDisplayMessageCheckoutUnsuccessful()
+    {
+        byte[] option = "2 105 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent);
+        String messages[] = outContent.toString().split("\n");
+        String actualCheckoutMesssage = messages[messages.length - 1];
+        assertThat(actualCheckoutMesssage, Is.is(unsuccessfulCheckoutMessage));
+    }
+
+    @Test
+    public void shouldBeAbleToReturn()
+    {
+        byte[] option = "3 106 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent);
+
+        ArrayList<String> bookTest = new ArrayList<String>();
+        ReadFile(bookTest);
+        boolean isContains = false;
+
+        for (String bookDetails : bookTest) {
+            StringTokenizer book = new StringTokenizer(bookDetails, ":");
+            if(book.nextToken().equals("106"))
+            {
+                isContains = true;
+                break;
+            }
+        }
+
+        assertThat(isContains, Is.is(true));
+    }
+
     private void AddBasicMessagesToList(ArrayList<String> expected) {
         expected.add(welcomeMessage);
         expected.addAll(menu);
@@ -180,13 +236,13 @@ public class BibliotecaTest {
 
     private void ReadFile(ArrayList bookTest)
     {
-        String fileName = "books";
+
 
         String line;
 
         try {
             FileReader fileReader =
-                    new FileReader(fileName);
+                    new FileReader(booksAvailableFile);
 
             BufferedReader bufferedReader =
                     new BufferedReader(fileReader);
@@ -200,12 +256,12 @@ public class BibliotecaTest {
         catch(FileNotFoundException ex) {
             System.out.println(
                     "Unable to open file '" +
-                            fileName + "'");
+                            booksAvailableFile + "'");
         }
         catch(IOException ex) {
             System.out.println(
                     "Error reading file '"
-                            + fileName + "'");
+                            + booksAvailableFile + "'");
         }
     }
 
@@ -214,6 +270,7 @@ public class BibliotecaTest {
 
 
         while (option.hasMoreElements()) {
+
             String opt = option.nextToken();
             list.add(opt);
         }
