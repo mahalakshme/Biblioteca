@@ -14,21 +14,19 @@ public class Menu {
         options = new ArrayList<String>();
 
         CreateMenu();
-
     }
 
     void CreateMenu() {
         options.add("1.List Books");
         options.add("2.Checkout Book");
+        options.add("3.Return Book");
     }
 
     void DisplayMenu() {
         for (String option : options) {
-            System.out.println(option);
+            System.out.print(option + "\t");
         }
-    }
 
-    void AddOptionsToMenu(String s) {
-        options.add(s);
+        System.out.println();
     }
 }
