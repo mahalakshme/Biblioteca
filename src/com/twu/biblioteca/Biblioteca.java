@@ -184,23 +184,12 @@ public class Biblioteca {
     }
 
     private void Return(String accessionNoReturn) {
-        ReturnBookWithAccessionNo(accessionNoReturn);
 
-        if(status == Status.successful) {
-            System.out.println("Thank you! Enjoy the book");
-        }
-        else if(status != Status.error) {
-            System.out.println("That book is not available.");
-        }
-    }
-
-    private void ReturnBookWithAccessionNo(String accessionNoReturn) {
-
-        ArrayList<String> bookTest = new ArrayList<String>();
-
-        if(DoesBookStoreContainFile(accessionNoReturn))
+        String bookDetails = new String();
+        if(DoesBookStoreContainFile(accessionNoReturn, bookDetails))
         {
           AddToBooksAvailable(accessionNoReturn);
+            System.out.println("Thank you for returning the book.");
         }
         else
         {
@@ -211,14 +200,15 @@ public class Biblioteca {
     private void AddToBooksAvailable(String accessionNoReturn) {
 
         try{
+
             PrintWriter out = new PrintWriter(new FileWriter(booksAvailableFile));
             out.println("the text");
-        }catch (IOException e) {
-            //exception handling left as an exercise for the reader
+        }catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
-    private boolean DoesBookStoreContainFile(String accessionNoReturn)
+    private boolean DoesBookStoreContainFile(String accessionNoReturn, String bookDetails)
     {
         String line;
         boolean isContains = false;
@@ -233,7 +223,7 @@ public class Biblioteca {
                 StringTokenizer book = new StringTokenizer(line, ":");
                 if(book.nextToken().equals(accessionNoReturn))
                 {
-                    String bookDetails = line;
+                    bookDetails = line;
                     isContains = true;
                     break;
                 }
