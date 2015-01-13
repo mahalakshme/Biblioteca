@@ -20,6 +20,7 @@ public class Menu {
         options.add("1.List Books");
         options.add("2.Checkout Book");
         options.add("3.Return Book");
+        options.add("4.List Movies");
     }
 
     void DisplayMenu() {
