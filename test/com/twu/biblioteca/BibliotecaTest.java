@@ -25,7 +25,6 @@ public class BibliotecaTest {
     String successfulReturnMessage = "Thank you for returning the book.";
     String unsuccessfulReturnMessage = "That is not a valid book to return.";
 
-    ArrayList<String> menu = new ArrayList<String>();
     ArrayList<Book> books = new ArrayList<Book>();
 
     @Before
@@ -37,17 +36,10 @@ public class BibliotecaTest {
     }
 
     @Before
-    public void CreateMenu()
-    {
-        menu.add("1.List Books");
-        menu.add("2.Checkout Book");
-    }
-
-    @Before
     public void CreateBookList()
     {
-       books.add(new Book("100", "Angels and Demons", "Dan Brown", "1999", true));
-       books.add(new Book("101", "Davinci Code", "Michael", "1990", false));
+        books.add(new Book("100", "Angels and Demons", "Dan Brown", "1999", true));
+        books.add(new Book("101", "Davinci Code", "Michael", "1990", false));
         books.add(new Book("103", "harry potter", "carry Lounge", "1999", true));
     }
 
@@ -68,20 +60,6 @@ public class BibliotecaTest {
 
         assertThat(outContent.toString(), containsString(welcomeMessage));
 
-    }
-
-    @Test
-    public void shouldListMenu()
-    {
-        byte[] option = "q".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca(inContent);
-
-        for (String entry : menu) {
-            assertThat(outContent.toString(), containsString(entry));
-        }
     }
 
     @Test
