@@ -13,13 +13,12 @@ public class User {
     private String phoneNo;
     private ArrayList<Item> checkedoutItems;
 
-    public User(String id, String password, String name, String emailId, String phoneNo, ArrayList<Item> checkedoutItems) {
+    public User(String id, String password, String name, String emailId, String phoneNo) {
         this.id = id;
         this.password = password;
         this.name = name;
         this.emailId = emailId;
         this.phoneNo = phoneNo;
-        this.checkedoutItems = checkedoutItems;
     }
 
     public String getId() {

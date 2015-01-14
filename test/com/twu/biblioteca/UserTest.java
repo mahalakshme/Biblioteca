@@ -33,7 +33,7 @@ public class UserTest {
     @Test
     public void checkUser()
     {
-        User user = new User("123-1234", "1009", "maha", "mahalakshme@gmail.com", "9600272894", null);
+        User user = new User("123-1234", "1009", "maha", "mahalakshme@gmail.com", "9600272894");
         assertThat(user.getId(), Is.is("123-1234"));
         assertThat(user.getPassword(), Is.is("1009"));
         assertThat(user.getName(), Is.is("maha"));

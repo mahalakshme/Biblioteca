@@ -15,6 +15,7 @@ public class Biblioteca {
 
         bangalorePublicLibrary = new Library();
         menu = new Menu();
+        CreateMenu();
 
         System.out.print("Welcome");
         System.out.println();
@@ -27,6 +28,7 @@ public class Biblioteca {
 
         bangalorePublicLibrary = new Library();
         menu = new Menu();
+        CreateMenu();
 
         System.out.print("Welcome");
         System.out.println();
@@ -35,87 +37,105 @@ public class Biblioteca {
 
     }
 
+    void CreateMenu() {
+        menu.options.add("1.List Books");
+        menu.options.add("2.Checkout Book");
+        menu.options.add("3.Return Book");
+        menu.options.add("4.List Movies");
+    }
+
+    void DisplayMenu() {
+        for (String option : menu.options) {
+            System.out.print(option + "\t");
+        }
+
+        System.out.println();
+    }
 
     private void ChooseOption(InputStream inContent) {
-
+        String accessionNo;
         String option;
         String shouldContinue = "Y";
         Scanner input = new Scanner(inContent);
 
-            while(shouldContinue.charAt(0) == 'Y')
-            {
-                menu.DisplayMenu();
-                System.out.println("Enter q to Quit");
-                option = input.next();
-             switch (option.charAt(0))
-             {
-                 case '1':
-                     bangalorePublicLibrary.DisplayBooks();
-                     break;
+        while (shouldContinue.charAt(0) == 'Y') {
+            DisplayMenu();
+            System.out.println("Enter q to Quit");
+            option = input.next();
 
-                 case '2':
-                 case '3':
-                 case '5':
-                     EnsureIfUserIsLoggedIn(inContent, option.charAt(0));
-                     break;
+            switch (option.charAt(0)) {
+                case '1':
+                    bangalorePublicLibrary.DisplayBooks();
+                    break;
 
-                 case '4':
-                     bangalorePublicLibrary.DisplayMovies();
-                     break;
+                case '2':
+                    if(EnsureIfUserIsLoggedin(input)) {
+                        System.out.println("Enter the accession no of the book to be checked out:");
+                        accessionNo = input.next();
+                        bangalorePublicLibrary.CheckoutBook(accessionNo);
+                    }
+                    break;
+                case '3':
+                    if(EnsureIfUserIsLoggedin(input)) {
+                        System.out.println("Enter the accession no of the book to be returned:");
+                        accessionNo = input.next();
+                        bangalorePublicLibrary.Return(accessionNo);
+                    }
+                    break;
 
-                 case 'q':
-                     return;
+                case '4':
+                    bangalorePublicLibrary.DisplayMovies();
+                    break;
 
-                 default:
-                     System.out.println("Select a valid option!");
+                case '5' :
+                    if(EnsureIfUserIsLoggedin(input)) {
+                        System.out.println("Enter the id no of the movie to be checked out:");
+                        accessionNo = input.next();
+                        bangalorePublicLibrary.CheckoutMovie(accessionNo);
+                    }
 
-             }
-                System.out.println("Do you want to continue?<Y/N>");
-                shouldContinue = input.next();
+                case 'q':
+                    return;
+
+                default:
+                    System.out.println("Select a valid option!");
+
+            }
+            System.out.println("Do you want to continue?<Y/N>");
+            shouldContinue = input.next();
         }
     }
 
-    private void RequestUserToLogin(InputStream inContent, char choice) {
-        Scanner input = new Scanner(inContent);
+    private boolean RequestUserToLogin(Scanner input) {
         System.out.println("enter user id and password:");
 
         String userId = input.next();
         String password = input.next();
-        boolean loggedin =  false;
 
         for (User user : bangalorePublicLibrary.users) {
-            if(user.getId().equals(userId) && user.getPassword().equals(password))
-            {
-                bangalorePublicLibrary.session = new Session(user);
-                loggedin = true;
-                bangalorePublicLibrary.session.ExecuteAction(inContent, choice, bangalorePublicLibrary.books, bangalorePublicLibrary.movies);
-                break;
+            if (user.getId().equals(userId) && user.getPassword().equals(password)) {
+                 bangalorePublicLibrary.loggedinUser = user;
+                return true;
             }
 
-            if(user.getId().equals(userId) && (!user.getPassword().equals(password)))
-            {
+            if (user.getId().equals(userId) && (!user.getPassword().equals(password))) {
                 break;
             }
         }
-
-        if(!loggedin)
-        {
             System.out.println("Invalid credentials");
+            return false;
+        }
+
+    private boolean EnsureIfUserIsLoggedin(Scanner input) {
+
+        if (bangalorePublicLibrary.loggedinUser != null) {
+            return true;
+        } else {
+            return RequestUserToLogin(input);
         }
     }
 
-    private void EnsureIfUserIsLoggedIn(InputStream inContent,char choice) {
-
-        if(bangalorePublicLibrary.session != null)
-        {
-            bangalorePublicLibrary.session.ExecuteAction(inContent, choice, bangalorePublicLibrary.books, bangalorePublicLibrary.movies);
-        }
-        else {
-            RequestUserToLogin(inContent, choice);
-        }
-    }
-
-    public static void main(String[] args)  {
-        new Biblioteca();
+    public static void main(String[] args) {
+         new Biblioteca();
     }
 }
