@@ -10,6 +10,7 @@ import java.io.PrintStream;
 
 import static org.hamcrest.core.StringContains.containsString;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by mahalaks on 13/01/15.
@@ -20,8 +21,6 @@ public class UserTest {
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private ByteArrayInputStream inContent = new ByteArrayInputStream("My string".getBytes());
 
-    String successfulCheckoutMessage = "Thank you! Enjoy";
-
     @Before
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
@@ -31,25 +30,13 @@ public class UserTest {
     }
 
     @Test
-    public void checkUser()
+    public void shouldBeAbleToCreateUser()
     {
-        User user = new User("123-1234", "1009", "maha", "mahalakshme@gmail.com", "9600272894");
-        assertThat(user.getId(), Is.is("123-1234"));
-        assertThat(user.getPassword(), Is.is("1009"));
+        Credential credential = new Credential("123-1234", "1009");
+        User user = new User(credential, "maha", "mahalakshme@gmail.com", "9600272894");
+        assertThat(user.getCredential(), Is.is(credential));
         assertThat(user.getName(), Is.is("maha"));
         assertThat(user.getEmailId(), Is.is("mahalakshme@gmail.com"));
         assertThat(user.getPhoneNo(), Is.is("9600272894"));
-    }
-
-    @Test
-    public void shouldBeAbleToLogin()
-    {
-        byte[] option = "2 123-1234 1009 100 q".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca(inContent);
-
-        assertThat(outContent.toString(), containsString(successfulCheckoutMessage));
     }
 }

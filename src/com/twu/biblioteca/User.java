@@ -6,46 +6,45 @@ import java.util.ArrayList;
  * Created by mahalaks on 13/01/15.
  */
 public class User {
-    private final String id;
-    private String password;
-    private String name;
-    private String emailId;
-    private String phoneNo;
-    private ArrayList<Item> checkedoutItems;
+    protected String name;
+    protected String emailId;
+    protected String phoneNo;
+    protected ArrayList<Item> checkedoutItems;
+    protected Credential credential;
 
-    public User(String id, String password, String name, String emailId, String phoneNo) {
-        this.id = id;
-        this.password = password;
+    public User() {}
+
+    public User(Credential credential, String name, String emailId, String phoneNo) {
+        this.credential = credential;
         this.name = name;
         this.emailId = emailId;
         this.phoneNo = phoneNo;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public String getName() {
+    String getName() {
         return name;
     }
 
-    public String getEmailId() {
+    String getEmailId() {
         return emailId;
     }
 
-    public String getPhoneNo() {
+    String getPhoneNo() {
         return phoneNo;
     }
 
-    public ArrayList<Item> getCheckedoutItems() {
-        return checkedoutItems;
+    ArrayList<Item> getCheckedoutItems() {
+        if(checkedoutItems != null)
+        {
+            return checkedoutItems;
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    public void setCheckedoutItems(Item item) {
+    void setCheckedoutItems(Item item) {
         if(checkedoutItems == null) {
             this.checkedoutItems = new ArrayList<Item>();
         }
@@ -53,13 +52,7 @@ public class User {
         this.checkedoutItems.add(item);
     }
 
-
-
-//    public boolean isLoggedinStatus() {
-//        return loggedinStatus;
-//    }
-//
-//    public void setLoggedinStatus(boolean loggedinStatus) {
-//        this.loggedinStatus = loggedinStatus;
-//    }
+    Credential getCredential() {
+        return credential;
+    }
 }

@@ -5,16 +5,12 @@ package com.twu.biblioteca;
  */
 public class Movie extends Item{
 
-    private String id;
-    private String name;
     private String year;
     private String director;
     private int rating;
-    private Boolean isAvailable;
-
 
     public Movie(String id, String name, String year, String director, int rating, boolean isAvailable) {
-        this.id = id;
+        this.accessionNo = id;
         this.name = name;
         this.year = year;
         this.director = director;
@@ -22,32 +18,15 @@ public class Movie extends Item{
         this.isAvailable = isAvailable;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getYear() {
+    String getYear() {
         return year;
     }
 
-    public String getDirector() {
+    String getDirector() {
         return director;
     }
 
-    public int getRating() {
+    int getRating() {
         return rating;
-    }
-
-    public Boolean getIsAvailable() {
-        return isAvailable;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setIsAvailable(boolean available)
-    {
-        this.isAvailable = available;
     }
 }

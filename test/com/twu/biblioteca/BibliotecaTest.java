@@ -1,5 +1,6 @@
 package com.twu.biblioteca;
 
+import org.hamcrest.core.Is;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,41 +19,52 @@ import static org.junit.Assert.assertTrue;
 public class BibliotecaTest {
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-    private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private ByteArrayInputStream inContent = new ByteArrayInputStream("My string".getBytes());
+    private PrintStream printContent = new PrintStream(outContent);
 
     String welcomeMessage = "Welcome";
     String successfulCheckoutMessage = "Thank you! Enjoy";
     String unsuccessfulCheckoutMessage = "That item is not available.";
     String successfulReturnMessage = "Thank you for returning";
     String unsuccessfulReturnMessage = "That is not a valid item to return.";
+    String loginSuccessfulMessage = "You are loggedin";
+    String logoutSuccessfulMessage = "You are loggedout";
 
     ArrayList<Book> books = new ArrayList<Book>();
     ArrayList<Movie> movies = new ArrayList<Movie>();
-
+    ArrayList<User> users = new ArrayList<User>();
+    BibliotecaInterface bibliotecaInterface;
+    Library publicLibrary;
+    Menu menu;
 
     @Before
-    public void setUpStreams() {
-        System.setOut(new PrintStream(outContent));
-        System.setErr(new PrintStream(errContent));
+    public void setUp() {
+        System.setOut(printContent);
         inContent.reset();
         System.setIn(inContent);
-    }
 
-    @Before
-    public void CreateBookList()
-    {
+        menu = new Menu();
+
+        menu.options.add("1.List Books");
+        menu.options.add("2.Checkout Book");
+        menu.options.add("3.Return Book");
+        menu.options.add("4.List Movies");
+
         books.add(new Book("100", "Angels and Demons", "Dan Brown", "1999", true));
         books.add(new Book("101", "Davinci Code", "Michael", "1990", false));
         books.add(new Book("103", "harry potter", "carry Lounge", "1999", true));
-    }
 
-    @Before
-    public void CreateMovieList()
-    {
-        movies.add(new Movie("100", "Angels and Demons", "1999", "Dan Brown", 5, true));
-        movies.add(new Movie("101", "Davinci Code", "1990", "Michael", 4, false));
-        movies.add(new Movie("102", "harry potter", "1999", "carry Lounge", 3, true));
+        movies.add(new Movie("104", "Angels and Demons", "1999", "Dan Brown", 5, true));
+        movies.add(new Movie("105", "Davinci Code", "1990", "Michael", 4, false));
+        movies.add(new Movie("106", "harry potter", "1999", "carry Lounge", 3, true));
+
+        users.add(new User(new Credential("123-1234", "1009"), "maha", "mahalakshme@gmail.com", "9600252894"));
+        users.add(new User(new Credential("123-1235", "1006"), "mawa", "mawalakshme@gmail.com", "9600262894"));
+        users.add(new User(new Credential("123-1236", "1007"), "mara", "maralakshme@gmail.com", "9600272894"));
+        users.add(new Librarian(new Credential("111-1111", "1000"), "king", "king@gmail.com", "9791213456"));
+
+        publicLibrary = new Library(books, movies, users);
+        bibliotecaInterface = new BibliotecaInterface(menu, publicLibrary);
     }
 
     @After
@@ -62,27 +74,37 @@ public class BibliotecaTest {
     }
 
     @Test
-    public void shouldWelcome()
-    {
+    public void shouldWelcome() {
         byte[] option = "q".getBytes();
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        new Biblioteca();
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
 
         assertThat(outContent.toString(), containsString(welcomeMessage));
-
     }
 
     @Test
-    public void shouldBeAbleToListBooks()
-    {
+    public void shouldDisplayMenuAfterBibliotecaIsInitialized() {
+        byte[] option = "q".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+
+        for (String menuOption : menu.options) {
+            assertThat(outContent.toString(), containsString(menuOption));
+        }
+    }
+
+    @Test
+    public void shouldBeAbleToListBooks() {
         byte[] option = "1 N".getBytes();
         inContent = new ByteArrayInputStream(option);
 
         outContent.reset();
 
-        new Biblioteca();
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
 
         for (Book book : books) {
             assertThat(outContent.toString(), containsString(book.getAccessionNo()));
@@ -93,144 +115,175 @@ public class BibliotecaTest {
     }
 
     @Test
-    public void shouldBeAbleToCheckoutBook()
-    {
-        byte[] option = "2 100 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(successfulCheckoutMessage));
+    public void ValidationOfUserCredentials() {
+        boolean isValid = bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        assertThat(isValid, Is.is(true));
     }
 
     @Test
-    public void checkIfInvalidCheckoutOfBookIsUnsuccessful()
-    {
-        byte[] option = "2 109 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(unsuccessfulCheckoutMessage));
+    public void ValidationOfUserCredentialsWhenPasswordIsIncorrect() {
+        boolean isValid = bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1000"));
+        assertThat(isValid, Is.is(false));
     }
 
     @Test
-    public void checkIfCheckoutOfUnavailableBookUnsuccessful()
-    {
-        byte[] option = "2 101 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(unsuccessfulCheckoutMessage));
+    public void ValidationOfInvalidUserCredentials() {
+        boolean isValid = bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1239", "1000"));
+        assertThat(isValid, Is.is(false));
     }
 
     @Test
-    public void shouldBeAbleToReturn()
-    {
-        byte[] option = "3 101 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(successfulReturnMessage));
+    public void shouldBeAbleToCheckoutBook() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        String message = bibliotecaInterface.CheckoutBook("100");
+        assertThat(message, Is.is(successfulCheckoutMessage));
     }
 
     @Test
-    public void checkIfInvalidReturnIsUnsuccessful()
-    {
-        byte[] option = "3 109 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(unsuccessfulReturnMessage));
+    public void checkIfCheckoutOfBookThatDoesNotBelongToLibraryIsUnsuccessful() {
+        String message = bibliotecaInterface.CheckoutBook("109");
+        assertThat(message, Is.is(unsuccessfulCheckoutMessage));
     }
 
     @Test
-    public void checkIfReturnOfExistingBookUnsuccessful()
-    {
-        byte[] option = "3 103 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-        assertThat(outContent.toString(), containsString(unsuccessfulReturnMessage));
+    public void checkIfCheckoutOfUnavailableBookIsUnsuccessful() {
+        String message = bibliotecaInterface.CheckoutBook("101");
+        assertThat(message, Is.is(unsuccessfulCheckoutMessage));
     }
 
     @Test
-    public void checkIfAbleToContinueChoosingOptions()
-    {
-        byte[] option = "1 Y 2 100 Y 3 100 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca();
-
-        for (Book book : books) {
-            assertThat(outContent.toString(), containsString(book.getAccessionNo()));
-            assertThat(outContent.toString(), containsString(book.getName()));
-            assertThat(outContent.toString(), containsString(book.getAuthor()));
-            assertThat(outContent.toString(), containsString(book.getYearPublished()));
-        }
-
-        assertThat(outContent.toString(), containsString(successfulCheckoutMessage));
-        assertThat(outContent.toString(), containsString(successfulReturnMessage));
+    public void shouldBeAbleToReturnCheckedoutBook() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        bibliotecaInterface.CheckoutBook("100");
+        String message = bibliotecaInterface.ReturnBook("100");
+        assertThat(message, Is.is(successfulReturnMessage));
     }
 
     @Test
-    public void shouldBeAbleToListMovies()
+    public void shouldFailWhenTriedToReturnBookThatWasNotCheckedout() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        String message = bibliotecaInterface.ReturnBook("100");
+        assertThat(message, Is.is(unsuccessfulReturnMessage));
+    }
+
+    @Test
+    public void shouldFailWhenTriedToReturnBookThatWasCheckedoutByDifferentUser() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        String message = bibliotecaInterface.ReturnBook("101");
+        assertThat(message, Is.is(unsuccessfulReturnMessage));
+    }
+
+    @Test
+    public void shouldFailWhenTriedToReturnBookThatDoesNotBelongToLibrary() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        String message = bibliotecaInterface.ReturnBook("109");
+        assertThat(message, Is.is(unsuccessfulReturnMessage));
+    }
+
+    @Test
+    public void shouldBeAbleToCheckoutMovie() {
+        bibliotecaInterface.AreUserCredentialsValid(new Credential("123-1234", "1009"));
+        String message = bibliotecaInterface.CheckoutMovie("104");
+        assertThat(message, Is.is(successfulCheckoutMessage));
+    }
+
+    @Test
+    public void checkIfCheckoutOfMovieThatDoesNotBelongToLibraryIsUnsuccessful() {
+        String message = bibliotecaInterface.CheckoutMovie("109");
+        assertThat(message, Is.is(unsuccessfulCheckoutMessage));
+    }
+
+    @Test
+    public void checkIfCheckoutOfUnavailableMovieIsUnsuccessful() {
+        String message = bibliotecaInterface.CheckoutMovie("105");
+        assertThat(message, Is.is(unsuccessfulCheckoutMessage));
+    }
+
+    @Test
+    public void checkIfLoggedinUserCanSeeAdditionalMenuOptionForSeeingHisInfo()
     {
+        byte[] option = "2 123-1234 1009 100 Y 1 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+        assertThat(outContent.toString(), containsString("6.Display my info"));
+    }
+
+    @Test
+    public void checkIfNotLoggedinUserCannotSeeAdditionalMenuOptionForSeeingHisInfo()
+    {
+        byte[] option = "1 123-1234 1009 100 Y 4 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+        assertTrue(!outContent.toString().contains("6.Display my info"));
+    }
+
+    @Test
+    public void checkIfLoggedinUserCanSeeHisInfo() {
+        byte[] option = "2 123-1234 1009 100 Y 6 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+
+        assertThat(outContent.toString(), containsString(users.get(0).getName()));
+        assertThat(outContent.toString(), containsString(users.get(0).getEmailId()));
+        assertThat(outContent.toString(), containsString(users.get(0).getPhoneNo()));
+    }
+
+    @Test
+    public void checkLogin()
+    {
+        byte[] option = "9 123-1234 1009 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+        assertThat(outContent.toString(), containsString(loginSuccessfulMessage));
+    }
+
+    @Test
+    public void checkLogout()
+    {
+        byte[] option = "9 123-1234 1009 Y 8 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+        assertThat(outContent.toString(), containsString(logoutSuccessfulMessage));
+    }
+
+    @Test
+    public void checkIfLibrarianCanFindWhoHasCheckedoutBook()
+    {
+        byte[] option = "2 123-1234 1009 100 Y 8 Y 9 111-1111 1000 Y 7 100 N".getBytes();
+        inContent = new ByteArrayInputStream(option);
+        outContent.reset();
+
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
+        assertThat(outContent.toString(), containsString("name:" + users.get(0).getName()));
+        assertThat(outContent.toString(), containsString("email id:" + users.get(0).getEmailId()));
+        assertThat(outContent.toString(), containsString("phone no:" + users.get(0).getPhoneNo()));
+    }
+
+    @Test
+    public void shouldBeAbleToListMovies() {
         byte[] option = "4 N".getBytes();
         inContent = new ByteArrayInputStream(option);
         outContent.reset();
 
-        new Biblioteca(inContent);
-
+        new Biblioteca(inContent, printContent, bibliotecaInterface);
 
         for (Movie movie : movies) {
-            if(movie.getIsAvailable()) {
+            if (movie.getIsAvailable()) {
                 assertThat(outContent.toString(), containsString(movie.getName()));
-            }
-            else
-            {
+            } else {
                 assertTrue(!outContent.toString().contains("Davinci Code"));
             }
         }
     }
-
-    @Test
-    public void shouldBeAbleToCheckoutMovie()
-    {
-        byte[] option = "5 106 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca(inContent);
-        assertThat(outContent.toString(), containsString(successfulCheckoutMessage));
-    }
-
-    @Test
-    public void checkIfCheckoutOfUnavailableMovieIsUnsuccessful()
-    {
-        byte[] option = "5 105 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca(inContent);
-        assertThat(outContent.toString(), containsString(unsuccessfulCheckoutMessage));
-    }
-
-    @Test
-    public void checkIfInvalidCheckoutOfMovieIsUnsuccessful()
-    {
-        byte[] option = "5 109 N".getBytes();
-        inContent = new ByteArrayInputStream(option);
-        outContent.reset();
-
-        new Biblioteca(inContent);
-        assertThat(outContent.toString(), containsString(unsuccessfulCheckoutMessage));
-    }
-
-
 }
+
