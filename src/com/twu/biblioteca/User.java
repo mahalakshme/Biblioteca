@@ -12,8 +12,6 @@ public class User {
     protected ArrayList<Item> checkedoutItems;
     protected Credential credential;
 
-    public User() {}
-
     public User(Credential credential, String name, String emailId, String phoneNo) {
         this.credential = credential;
         this.name = name;

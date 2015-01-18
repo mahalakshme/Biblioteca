@@ -7,28 +7,35 @@ import java.util.ArrayList;
  */
 public class Library {
 
-    ArrayList<Book> books = new ArrayList<Book>();
-    ArrayList<Movie> movies = new ArrayList<Movie>();
-    ArrayList<User> users = new ArrayList<User>();
+    private ArrayList<Book> books = new ArrayList<Book>();
+    private ArrayList<Movie> movies = new ArrayList<Movie>();
+    private UserManager userManager;
 
-    public Library(ArrayList<Book> books, ArrayList<Movie> movies, ArrayList<User> users) {
+    public Library(ArrayList<Book> books, ArrayList<Movie> movies, UserManager userManager) {
 
+        this.userManager = userManager;
         this.books = books;
         this.movies = movies;
-        this.users = users;
     }
 
-    Book CheckoutBook(String accessionNo) {
+    ArrayList<Book> getBooks() {
+        return books;
+    }
+
+    ArrayList<Movie> getMovies() {
+        return movies;
+    }
+
+    Book CheckoutBook(String accessionNo, User loggedinUser) {
 
         for (Book book : books) {
-            if(book.getAccessionNo().equals(accessionNo) && (book.getIsAvailable()))
-            {
+            if (book.getAccessionNo().equals(accessionNo) && (book.getIsAvailable())) {
+                loggedinUser.setCheckedoutItems(book);
                 book.setIsAvailable(false);
                 return book;
             }
 
-            if(book.getAccessionNo().equals(accessionNo) && !(book.getIsAvailable()))
-            {
+            if (book.getAccessionNo().equals(accessionNo) && !(book.getIsAvailable())) {
                 return null;
             }
         }
@@ -36,29 +43,32 @@ public class Library {
         return null;
     }
 
-    boolean Return(Book book) {
+    boolean Return(String accessionNo, User loggedinUser) {
+        
+        Book book = FindBook(accessionNo);
 
-            if(!book.getIsAvailable()) {
-                book.setIsAvailable(true);
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+        if(book != null && loggedinUser.getCheckedoutItems() !=null && loggedinUser.getCheckedoutItems().contains(book))
+         {
+             loggedinUser.getCheckedoutItems().remove(book);
+             book.setIsAvailable(true);
+             return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    Movie CheckoutMovie(String accessionNo) {
+    Movie CheckoutMovie(String accessionNo, User loggedinUser) {
 
         for (Movie movie : movies) {
-            if(movie.getAccessionNo().equals(accessionNo) && (movie.getIsAvailable()))
-            {
+            if (movie.getAccessionNo().equals(accessionNo) && (movie.getIsAvailable())) {
+                loggedinUser.setCheckedoutItems(movie);
                 movie.setIsAvailable(false);
                 return movie;
             }
 
-            if(movie.getAccessionNo().equals(accessionNo) && !(movie.getIsAvailable()))
-            {
+            if (movie.getAccessionNo().equals(accessionNo) && !(movie.getIsAvailable())) {
                 return null;
             }
         }
@@ -68,12 +78,11 @@ public class Library {
 
     String FindUserWhoHasCheckedoutBook(String accessionNo) {
 
-        for (User user : users) {
+        for (User user : userManager.GetUsers()) {
 
             for (Item item : user.getCheckedoutItems()) {
 
-                if(item.getAccessionNo().equals(accessionNo))
-                {
+                if (item.getAccessionNo().equals(accessionNo)) {
                     return "name:" + user.getName() + "\n" + "email id:" + user.getEmailId() + "\n" + "phone no:" + user.getPhoneNo();
                 }
             }
@@ -81,6 +90,16 @@ public class Library {
         }
 
         return null;
+    }
 
+    Book FindBook(String accessionNo) {
+        for (Book book : books) {
+            if (book.getAccessionNo().equals(accessionNo)) {
+               return book;
+
+            }
+        }
+
+        return null;
     }
 }

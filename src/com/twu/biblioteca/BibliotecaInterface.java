@@ -1,5 +1,8 @@
 package com.twu.biblioteca;
 
+import java.io.PrintStream;
+import java.util.Scanner;
+
 /**
  * Created by mahalaks on 15/01/15.
  */
@@ -12,110 +15,125 @@ public class BibliotecaInterface {
     String findingUserUnsuccessfulMessage = "Book is not checkedout or entered AccessionNo not valid.";
 
     Library bangalorePublicLibrary;
-    Menu menu;
-    User loggedinUser;
+    Scanner input;
+    PrintStream outContent;
 
-    public BibliotecaInterface(Menu menu, Library publicLibrary)
+    public BibliotecaInterface(Library publicLibrary, Scanner inContent, PrintStream outContent)
     {
-        this.menu = menu;
         bangalorePublicLibrary = publicLibrary;
+        this.input = inContent;
+        this.outContent = outContent;
     }
 
-    boolean IsUserLoggedin() {
+    void DisplayBooks() {
 
-        if (loggedinUser != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+        for (Book book : bangalorePublicLibrary.getBooks()) {
 
-    boolean AreUserCredentialsValid(Credential credential) {
-
-        for (User user : bangalorePublicLibrary.users) {
-            if (user.getCredential().equals(credential)) {
-                loggedinUser = user;
-                menu.options.add("6.Display my info");
-                menu.options.add("8.Logout");
-                menu.options.remove("9.Login");
-                if(user instanceof Librarian)
-                {
-                 menu.options.add("7.Find the user who has checkedout the book");
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    String CheckoutBook(String accessionNo) {
-
-        Book book = bangalorePublicLibrary.CheckoutBook(accessionNo);
-        if(book != null)
-        {
-            loggedinUser.setCheckedoutItems(book);
-           return successfulCheckoutMessage;
-        }
-        else
-        {
-            return unsuccessfulCheckoutMessage;
+            outContent.print(book.getAccessionNo());
+            outContent.print("\t");
+            outContent.print(book.getName());
+            outContent.print("\t");
+            outContent.print(book.getAuthor());
+            outContent.print("\t");
+            outContent.println(book.getYearPublished());
         }
     }
 
-    String ReturnBook(String accessionNo) {
-
-        for (Book book : bangalorePublicLibrary.books) {
-            if(book.getAccessionNo().equals(accessionNo))
-            {
-               if(bangalorePublicLibrary.Return(book) && loggedinUser.getCheckedoutItems() !=null && loggedinUser.getCheckedoutItems().contains(book))
-               {
-                   loggedinUser.getCheckedoutItems().remove(book);
-                   return successfulReturnMessage;
-               }
-                else
-               {
-                   return unsuccessfulReturnMessage;
-               }
-            }
-        }
-
-        return unsuccessfulReturnMessage;
+    void PrintMessage(Message message)
+    {
+        outContent.println(message.getMessage());
     }
 
-    String CheckoutMovie(String accessionNo) {
+    void FindUserWhoHasCheckedoutBook() {
 
-         Movie movie = bangalorePublicLibrary.CheckoutMovie(accessionNo);
-        if(movie != null)
-        {
-            loggedinUser.setCheckedoutItems(movie);
-            return successfulCheckoutMessage;
-        }
-        else
-        {
-            return unsuccessfulCheckoutMessage;
-        }
-    }
+        outContent.println("Enter accession no:");
+        String accessionNo = input.next();
 
-    String FindUserWhoHasCheckedoutBook(String accessionNo) {
         String userInfo = bangalorePublicLibrary.FindUserWhoHasCheckedoutBook(accessionNo);
         if(userInfo != null)
         {
-            return userInfo;
+            outContent.println(userInfo);
         }
         else
         {
-            return findingUserUnsuccessfulMessage;
+            outContent.println(findingUserUnsuccessfulMessage);
         }
     }
 
-    boolean isLoggedinUserLibrarian() {
-        return loggedinUser instanceof Librarian;
+    void DisplayMovies() {
+
+            for (Movie movie : bangalorePublicLibrary.getMovies()) {
+                if(movie.getIsAvailable()) {
+                    outContent.print(movie.getAccessionNo());
+                    outContent.print("\t");
+                    outContent.print(movie.getName());
+                    outContent.print("\t");
+                    outContent.print(movie.getDirector());
+                    outContent.print("\t");
+                    outContent.print(movie.getYear());
+                    outContent.print("\t");
+                    outContent.println(movie.getRating());
+                }
+            }
+        }
+
+    void DiplayLoggedinUserInfo(User loggedinUser) {
+
+            outContent.println("Name:" + loggedinUser.getName());
+            outContent.println("Email address:" + loggedinUser.getEmailId());
+            outContent.println("Phone no:" + loggedinUser.getPhoneNo());
+        }
+
+    void CheckoutMovie(User loggedinUser) {
+        String accessionNo;
+        outContent.println("Enter the id no of the movie to be checked out:");
+        accessionNo = input.next();
+        Movie movie = bangalorePublicLibrary.CheckoutMovie(accessionNo, loggedinUser);
+        if(movie != null)
+        {
+            outContent.println(successfulCheckoutMessage);
+        }
+        else
+        {
+            outContent.println(unsuccessfulCheckoutMessage);
+        }
     }
 
-    void Logout() {
-        loggedinUser = null;
-        menu.options.add("9.Login");
+    void ReturnBook(User loggedinUser) {
+        String accessionNo;
+        outContent.println("Enter the accession no of the book to be returned:");
+        accessionNo = input.next();
+
+        if(bangalorePublicLibrary.Return(accessionNo, loggedinUser))
+        {
+            outContent.println(successfulReturnMessage);
+        }
+        else
+        {
+            outContent.println(unsuccessfulReturnMessage);
+        }
+    }
+
+    void CheckoutBook(User loggedinUser) {
+        String accessionNo;
+        outContent.println("Enter the accession no of the book to be checked out:");
+        accessionNo = input.next();
+        Book book = bangalorePublicLibrary.CheckoutBook(accessionNo, loggedinUser);
+        if(book != null)
+        {
+            outContent.println(successfulCheckoutMessage);
+        }
+        else
+        {
+            outContent.println(unsuccessfulCheckoutMessage);
+        }
+    }
+
+    Credential RequestUserCredentials() {
+        outContent.println("enter user id and password:");
+
+        String userId = input.next();
+        String password = input.next();
+        return new Credential(userId, password);
     }
 }

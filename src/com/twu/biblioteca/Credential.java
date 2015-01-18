@@ -16,7 +16,7 @@ public class Credential {
 
     @Override
     public boolean equals(Object obj) {
-        //null instanceof Object will always return false
+
         if (!(obj instanceof Credential))
             return false;
         if (obj == this)
