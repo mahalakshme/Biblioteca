@@ -15,14 +15,14 @@ public class Login extends Option {
         if(userManager.GetLoggedinUser() == null) {
             Credential credential = bibliotecaInterface.RequestUserCredentials();
             if (userManager.AreUserCredentialsValid(credential)) {
-                bibliotecaInterface.PrintMessage(new LoginMessage());
+                bibliotecaInterface.PrintMessage(Messages.LoginMessage);
             } else {
-                  bibliotecaInterface.PrintMessage(new InvalidCredentialsMessage());
+                  bibliotecaInterface.PrintMessage(Messages.InvalidCredentialsMessage);
             }
         }
         else
         {
-            bibliotecaInterface.PrintMessage(new AlreadyLoggedinMessage());
+            bibliotecaInterface.PrintMessage(Messages.AlreadyLoggedinMessage);
         }
     }
 }

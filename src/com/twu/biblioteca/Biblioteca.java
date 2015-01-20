@@ -23,7 +23,7 @@ public class Biblioteca {
         this.userManager = userManager;
         this.input = inContent;
         this.outContent = outContent;
-        outContent.println("Welcome");
+        outContent.println(Messages.WelcomeMessage);
 
         InputOption();
     }
@@ -44,15 +44,15 @@ public class Biblioteca {
 
         while (shouldContinue.charAt(0) == 'Y') {
             DisplayMenu();
-            outContent.println("Enter q to Quit");
+            outContent.println(Messages.QuitMessage);
             option = input.next();
 
             if(!menu.ChooseOption((int)option.charAt(0) - '0'))
             {
-                outContent.println("Select a valid option!");
+                outContent.println(Messages.InvalidOptionMessage);
             }
 
-            outContent.println("Do you want to continue?<Y/N>");
+            outContent.println(Messages.ContinueMessage);
             shouldContinue = input.next();
         }
     }

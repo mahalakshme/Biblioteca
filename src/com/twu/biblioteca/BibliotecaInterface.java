@@ -8,12 +8,6 @@ import java.util.Scanner;
  */
 public class BibliotecaInterface {
 
-    String successfulCheckoutMessage = "Thank you! Enjoy";
-    String unsuccessfulCheckoutMessage = "That item is not available.";
-    String successfulReturnMessage = "Thank you for returning";
-    String unsuccessfulReturnMessage = "That is not a valid item to return.";
-    String findingUserUnsuccessfulMessage = "Book is not checkedout or entered AccessionNo not valid.";
-
     Library bangalorePublicLibrary;
     Scanner input;
     PrintStream outContent;
@@ -39,9 +33,9 @@ public class BibliotecaInterface {
         }
     }
 
-    void PrintMessage(Message message)
+    void PrintMessage(String message)
     {
-        outContent.println(message.getMessage());
+        outContent.println(message);
     }
 
     void FindUserWhoHasCheckedoutBook() {
@@ -56,7 +50,7 @@ public class BibliotecaInterface {
         }
         else
         {
-            outContent.println(findingUserUnsuccessfulMessage);
+            outContent.println(Messages.findingUserUnsuccessfulMessage);
         }
     }
 
@@ -91,11 +85,11 @@ public class BibliotecaInterface {
         Movie movie = bangalorePublicLibrary.CheckoutMovie(accessionNo, loggedinUser);
         if(movie != null)
         {
-            outContent.println(successfulCheckoutMessage);
+            outContent.println(Messages.successfulCheckoutMessage);
         }
         else
         {
-            outContent.println(unsuccessfulCheckoutMessage);
+            outContent.println(Messages.unsuccessfulCheckoutMessage);
         }
     }
 
@@ -106,11 +100,11 @@ public class BibliotecaInterface {
 
         if(bangalorePublicLibrary.Return(accessionNo, loggedinUser))
         {
-            outContent.println(successfulReturnMessage);
+            outContent.println(Messages.successfulReturnMessage);
         }
         else
         {
-            outContent.println(unsuccessfulReturnMessage);
+            outContent.println(Messages.unsuccessfulReturnMessage);
         }
     }
 
@@ -121,11 +115,11 @@ public class BibliotecaInterface {
         Book book = bangalorePublicLibrary.CheckoutBook(accessionNo, loggedinUser);
         if(book != null)
         {
-            outContent.println(successfulCheckoutMessage);
+            outContent.println(Messages.successfulCheckoutMessage);
         }
         else
         {
-            outContent.println(unsuccessfulCheckoutMessage);
+            outContent.println(Messages.unsuccessfulCheckoutMessage);
         }
     }
 

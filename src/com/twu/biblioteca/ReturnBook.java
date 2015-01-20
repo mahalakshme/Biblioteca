@@ -17,7 +17,7 @@ public class ReturnBook extends Option {
         }
         else
         {
-            bibliotecaInterface.PrintMessage(new NotLoggedinMessage());
+            bibliotecaInterface.PrintMessage(Messages.NotLoggedinMessage);
         }
     }
 }

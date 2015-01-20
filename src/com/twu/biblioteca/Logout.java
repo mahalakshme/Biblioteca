@@ -14,11 +14,11 @@ public class Logout extends Option {
     void execute() {
         if(userManager.GetLoggedinUser() != null) {
             userManager.SetLoggedinUser(null);
-            bibliotecaInterface.PrintMessage(new LogoutMessage());
+            bibliotecaInterface.PrintMessage(Messages.LogoutMessage);
         }
         else
         {
-            bibliotecaInterface.PrintMessage(new AlreadyLoggedoutMessage());
+            bibliotecaInterface.PrintMessage(Messages.AlreadyLoggedoutMessage);
         }
         }
 }

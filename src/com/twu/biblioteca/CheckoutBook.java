@@ -18,7 +18,7 @@ public class CheckoutBook extends Option {
         }
         else
         {
-            bibliotecaInterface.PrintMessage(new NotLoggedinMessage());
+            bibliotecaInterface.PrintMessage(Messages.NotLoggedinMessage);
         }
     }
 }

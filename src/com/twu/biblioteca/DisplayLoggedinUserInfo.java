@@ -19,7 +19,7 @@ public class DisplayLoggedinUserInfo extends Option{
         }
         else
         {
-            bibliotecaInterface.PrintMessage(new NotLoggedinMessage());
+            bibliotecaInterface.PrintMessage(Messages.NotLoggedinMessage);
         }
     }
 }
